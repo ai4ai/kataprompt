@@ -1,0 +1,83 @@
+config:
+  name: "transcript-summarization"
+  input:
+    - name: "meeting-transcript"
+      step: 1
+      vars:
+        - name: "text"
+          type: "textfile"
+          value: "docs/meeting_transcript.txt"
+  steps:
+    - step: 1
+      name: "extract"
+      modelConfig:
+        modelId: "mistralai/mistral-large"
+        parameters:
+          temprature: 0.1
+          max_new_tokens: 4000
+          decoding_method: "greedy"
+          min_new_tokens: 5
+          repetition_penalty: 1
+      preprocessors:
+        - type: "chunk"
+          outputVariableName: "context"
+          options:
+            chunkSize: 24000
+            chunkOverlap: 400
+            separators:
+              - "\n"
+              - "\n\n"
+      input:
+        prompt:
+          name: "step1-extract"
+          type: "textfile"
+          value: "prompts/translate-and-extract.txt"
+        vars:
+          - name: "source_language"
+            type: "string"
+            value: "Japanese"
+          - name: "target_language"
+            type: "string"
+            value: "English"
+      output:
+        - type: "output_variable"
+          name: "output_text"
+          fromField: "response"
+        - type: "output_variable"
+          name: "latency"
+          fromField: "latency"
+    - step: 2
+      name: "summarize"
+      modelConfig:
+        modelId: "mistralai/mistral-large"
+        parameters:
+          temprature: 0.1
+          max_new_tokens: 4000
+          decoding_method: "greedy"
+          min_new_tokens: 5
+          repetition_penalty: 1
+      input:
+        prompt:
+          name: "step2-summarize"
+          type: "textfile"
+          value: "prompts/summarize.txt"
+        vars:
+          - name: "context"
+            type: "output_variable"
+            value: "response"
+          - name: "summary_template"
+            type: "textfile"
+            value: "vars/summary_template.txt"
+      output:
+        - type: "output_variable"
+          name: "output_text"
+          fromField: "response"
+        - type: "output_variable"
+          name: "latency"
+          fromField: "latency"
+  evals:
+    - name: "pattern-search"
+      type: "pattern-search"
+      searchPath: "transcript-summarization"
+      ruleset: "evals/patterns.csv"
+      rulesetType: "csvfile"

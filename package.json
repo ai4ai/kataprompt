@@ -1,0 +1,33 @@
+{
+  "name": "kataprompt",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "test": "node tests",
+    "tdd": "nodemon --exec npm start",
+    "evals": "node evals"
+  },
+  "keywords": [],
+  "author": "w0o",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@langchain/community": "^0.2.31",
+    "csv-parser": "^3.0.0",
+    "csv-stringify": "^6.5.1",
+    "dotenv": "^16.4.5",
+    "handlebars": "^4.7.8",
+    "ibm-watson": "^9.1.0",
+    "js-yaml": "^4.1.0",
+    "langchain": "^0.2.17",
+    "nodemon": "^3.1.7",
+    "undici": "^6.19.8"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.9.1",
+    "eslint": "^9.9.1",
+    "globals": "^15.9.0"
+  }
+}
